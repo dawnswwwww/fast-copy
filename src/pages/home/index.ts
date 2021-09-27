@@ -1,8 +1,9 @@
 import { LitElement, css, html } from "lit";
-import { customElement, property, state } from "lit/decorators.js";
-import { ref, createRef } from 'lit/directives/ref.js';
+import { customElement, state } from "lit/decorators.js";
+import { repeat } from 'lit/directives/repeat.js';
 
 import '../../components/copy'
+import '../../components/tabs'
 
 @customElement('main-home')
 export class Home extends LitElement {
@@ -21,23 +22,13 @@ export class Home extends LitElement {
     }
 
     .container::-webkit-scrollbar {
-      // width: 6px;
       color: lightgreen;
     }
-
-    // :host::-webkit-scrollbar-track  {
-    //   // width: 5px;
-    //   background-color: #fff
-    // }
-
-    // :host::-webkit-scrollbar-thumb   {
-    //   border-radius: 5px;
-    // }
 
     .container {
       height: 100%;
       width: 100%;
-      padding: 5px 10px;
+      padding: 5px;
       overflow-y: scroll;
       overflow-x: hidden;
       border-radius: 10px;
@@ -102,9 +93,9 @@ export class Home extends LitElement {
   `
 
   getSync() {
-    chrome?.storage?.sync.get(['copyList'], (result) =>  {
+    chrome?.storage?.sync.get(['copyList'], (result: any) =>  {
       console.log('Value is set to ' + result.copyList);
-      this.copyList = result.copyList ?? [];
+      this.copyList = result.copyList ?? [{}];
     });
   }
 
@@ -115,17 +106,17 @@ export class Home extends LitElement {
   }
 
   updateData (data, index) {
-    this.copyList[index] = data
+    // this.copyList[index] = data
     this.setSync()
   }
 
   connectedCallback () {
     super.connectedCallback();
-    this.getSync()
+    // this.getSync()
   }
 
   addOne() {
-    this.copyList = [...this.copyList, '']
+    // this.copyList = [...this.copyList, '']
     this.setSync()
     console.log(this.copyList)
   }
@@ -136,19 +127,31 @@ export class Home extends LitElement {
     this.setSync()
   }
 
+  renderList() {
+      return this.copyList.map((item: any, index: Number) => {
+        console.log(item)
+        return html`
+          <lt-tabs-pane label="${item.name}">
+          ${item.list.map((val: String, index: Number) => html`
+            <div class="list-item">
+              <my-copy .updateFn=${(data) => this.updateData(data, index)} class="copy-item" .val=${val} ></my-copy>
+                <div class="remove" @click=${() => this.removeOne(index)} ><span class="btn">删除</span></div>
+              </div>
+            `)}
+          </lt-tabs-pane>
+        `
+      })
+    }
+
   @state()
-  copyList: Array<string> = []
+  copyList: Array<any> = [{name: '标签1', list: ['asd']}, {name: '标签2', list: ['asd111']}, {name: '标签2', list: ['asd111']}, {name: '标签2', list: ['asd111']}]
 
   render() {
     return html`
         <div class="container">
-          ${this.copyList.map((val, index) => html`
-            <div class="list-item">
-              <my-copy .updateFn=${(data) => this.updateData(data, index)} class="copy-item" .val=${val} ></my-copy>
-              <div class="remove" @click=${() => this.removeOne(index)} ><span class="btn">删除<span></div>
-            </div>
-          `)}
-        <div class="add" ><span @click=${this.addOne} class="btn">增加<span></div>
+          <lt-tabs tabWidth="100px" >
+            ${this.renderList()}
+          </lt-tabs>
         </div>
     `
   }

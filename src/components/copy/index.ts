@@ -54,13 +54,13 @@ export class MyCopy extends LitElement {
   }
   `
 
-  @property()
+  @property({ attribute: false })
   updateFn: Function = () => {}
 
   @state()
   isEdit: boolean = false
 
-  @state()
+  @property({ type: String })
   val: string = ''
 
   inputRef: any = createRef()
