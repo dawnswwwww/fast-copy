@@ -28,6 +28,14 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
+"@pwrs/lit-css@^1.2.1":
+  version "1.2.1"
+  resolved "https://registry.npmmirror.com/@pwrs/lit-css/-/lit-css-1.2.1.tgz#457d08c0f9b4235af1cf94e8b1c56c3fd8358bac"
+  integrity sha512-SGROR42VoGvG6ryVMEcAL8BVsosLu8zxln169Rnb32aml4IUxoHxHtEviLeyPIxpBomgCXqCNV6JML8ie6dT7A==
+  dependencies:
+    string-to-template-literal "^2.0.0"
+    uglifycss "^0.0.29"
+
 "@types/fs-extra@^8.0.1":
   version "8.1.2"
   resolved "https://registry.nlark.com/@types/fs-extra/download/@types/fs-extra-8.1.2.tgz?cache=0&sync_timestamp=1629708004729&other_urls=https%3A%2F%2Fregistry.nlark.com%2F%40types%2Ffs-extra%2Fdownload%2F%40types%2Ffs-extra-8.1.2.tgz#7125cc2e4bdd9bd2fc83005ffdb1d0ba00cca61f"
@@ -104,6 +112,11 @@ esbuild@^0.12.17:
   version "0.12.26"
   resolved "https://registry.nlark.com/esbuild/download/esbuild-0.12.26.tgz#35f2d58ac3fa4629df24aa4d6fd72feb5522e94b"
   integrity sha1-NfLVisP6RinfJKpNb9cv61Ui6Us=
+
+estree-walker@^0.6.1:
+  version "0.6.1"
+  resolved "https://registry.npmmirror.com/estree-walker/-/estree-walker-0.6.1.tgz#53049143f40c6eb918b23671d1fe3219f3a1b362"
+  integrity sha512-SqmZANLWS0mnatqbSfRP5g8OXZC12Fgg1IwNtLsyHDzJizORW4khDfjPqJZsemPWBB2uqykUah5YpQ6epsqC/w==
 
 fast-glob@^3.0.3:
   version "3.2.7"
@@ -367,6 +380,21 @@ rollup-plugin-copy@^3.4.0:
     globby "10.0.1"
     is-plain-object "^3.0.0"
 
+rollup-plugin-lit-css@^3.2.1:
+  version "3.2.1"
+  resolved "https://registry.npmmirror.com/rollup-plugin-lit-css/-/rollup-plugin-lit-css-3.2.1.tgz#3cf101f0d85122c8e966194cb8c9661766220aa9"
+  integrity sha512-VCVJeTCsPoynt1GvVOMWo+J3zCvqqNSoPwJdrdMRRN5cvvcXUdbLbAut2k30FDrs+Mby0c6vqqqNLZEcwEr2Kw==
+  dependencies:
+    "@pwrs/lit-css" "^1.2.1"
+    rollup-pluginutils "^2.8.2"
+
+rollup-pluginutils@^2.8.2:
+  version "2.8.2"
+  resolved "https://registry.npmmirror.com/rollup-pluginutils/-/rollup-pluginutils-2.8.2.tgz#72f2af0748b592364dbd3389e600e5a9444a351e"
+  integrity sha512-EEp9NhnUkwY8aif6bxgovPHMoMoNr2FulJziTndpt5H9RdwC47GSGuII9XxpSdzVGM0GWrNPHV6ie1LTNJPaLQ==
+  dependencies:
+    estree-walker "^0.6.1"
+
 rollup@^2.38.5:
   version "2.56.3"
   resolved "https://registry.nlark.com/rollup/download/rollup-2.56.3.tgz?cache=0&sync_timestamp=1629695540410&other_urls=https%3A%2F%2Fregistry.nlark.com%2Frollup%2Fdownload%2Frollup-2.56.3.tgz#b63edadd9851b0d618a6d0e6af8201955a77aeff"
@@ -391,12 +419,22 @@ source-map-js@^0.6.2:
   resolved "https://registry.npm.taobao.org/source-map-js/download/source-map-js-0.6.2.tgz#0bb5de631b41cfbda6cfba8bd05a80efdfd2385e"
   integrity sha1-C7XeYxtBz72mz7qL0FqA79/SOF4=
 
+string-to-template-literal@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.npmmirror.com/string-to-template-literal/-/string-to-template-literal-2.0.0.tgz#0ce56bf42052d53049243e11dbf045b9ad687f9e"
+  integrity sha512-AbTUWHXMyoRlTFP9qe013dfGTFq1XbcBLUoLC7PcumbJewtUwNXCvnko5cH2gZkUFC7kD2Fwxiv4YIndkU0xHA==
+
 to-regex-range@^5.0.1:
   version "5.0.1"
   resolved "https://registry.nlark.com/to-regex-range/download/to-regex-range-5.0.1.tgz#1648c44aae7c8d988a326018ed72f5b4dd0392e4"
   integrity sha1-FkjESq58jZiKMmAY7XL1tN0DkuQ=
   dependencies:
     is-number "^7.0.0"
+
+uglifycss@^0.0.29:
+  version "0.0.29"
+  resolved "https://registry.npmmirror.com/uglifycss/-/uglifycss-0.0.29.tgz#abe49531155d146e75dd2fdf933d371bc1180054"
+  integrity sha512-J2SQ2QLjiknNGbNdScaNZsXgmMGI0kYNrXaDlr4obnPW9ni1jljb1NeEVWAiTgZ8z+EBWP2ozfT9vpy03rjlMQ==
 
 universalify@^0.1.0:
   version "0.1.2"

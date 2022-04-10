@@ -8,13 +8,20 @@ export class Myinputs extends LitElement {
   static styles = css`
   :host {
     height: 30px;
-    width: 100px;
-    color: red
-  }`
+    max-width: 100%;
+    color: red; 
+  }
+  .my-input {
+    max-width: 100%;
+  }
+  `
 
   @property({type: 'string'})
   value: String  = ''
   val = this.value
+
+  @property()
+  onBlur: (value) => void
 
   public getValue () {
     return this.val
@@ -40,18 +47,24 @@ export class Myinputs extends LitElement {
     this.inputRef.value.select()
   }
 
-  inputRef: any = createRef()
+
+
+  inputRef: any = createRef<HTMLInputElement>()
 
   render() {
     return html`
       <input
+        class="my-input"
         ${ref(this.inputRef)} 
         type="text" 
-        value=${this.value} 
+        value=${this.value}
+        @blur=${() => {
+          this.onBlur?.(this.val)
+        }}
         @input=${this.updateVal}
         @compositionstart=${this.handleCompositionstart}
         @compositionend=${this.handleCompositionend}
-          />
+      />
     `
   }
 }

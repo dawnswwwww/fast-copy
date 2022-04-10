@@ -1,15 +1,14 @@
 import { LitElement, css, html } from "lit";
 import { customElement, state } from "lit/decorators.js";
-import { repeat } from 'lit/directives/repeat.js';
 
-import '../../components/copy'
-import '../../components/tabs'
+import "../../components/copy";
+import "../../components/tabs";
 
-@customElement('main-home')
+@customElement("main-home")
 export class Home extends LitElement {
-
-  constructor () {
+  constructor() {
     super();
+    this.onTabEdit = this.onTabEdit.bind(this);
   }
 
   static styles = css`
@@ -18,7 +17,7 @@ export class Home extends LitElement {
       height: 200px;
       display: block;
       border-radius: 10px;
-      box-shadow: 2px 2px 10px #00000011
+      box-shadow: 2px 2px 10px #00000011;
     }
 
     .container::-webkit-scrollbar {
@@ -48,11 +47,11 @@ export class Home extends LitElement {
     }
 
     .list-item:hover .edit {
-        display: block;
+      display: block;
     }
 
     .copy-item {
-      flex: 1
+      flex: 1;
     }
     .remove {
       color: red;
@@ -90,69 +89,108 @@ export class Home extends LitElement {
     .add .btn:hover {
       background-color: #cccccc44;
     }
-  `
+  `;
 
   getSync() {
-    chrome?.storage?.sync.get(['copyList'], (result: any) =>  {
-      console.log('Value is set to ' + result.copyList);
-      this.copyList = result.copyList ?? [{}];
-    });
+    if (chrome.storage) {
+      chrome?.storage?.sync.get(["copyList"], (result: any) => {
+        console.log("Value is set to " + result.copyList);
+        this.copyList = result.copyList ?? [{}];
+      });
+    } else {
+      const value = JSON.parse(localStorage.getItem("copyList")) ?? [{}];
+      this.copyList = value;
+    }
   }
 
-  setSync () {
-    chrome?.storage?.sync.set({['copyList']: this.copyList}, function() {
-      console.log('Value is set to ' + this.copyList);
-    });
+  setSync() {
+    if (chrome.storage) {
+      // chrome plugin
+      chrome?.storage?.sync.set({ ["copyList"]: this.copyList }, function () {
+        console.log("Value is set to " + this.copyList);
+      });
+    } else {
+      // web
+      localStorage.setItem("copyList", JSON.stringify(this.copyList));
+    }
   }
 
-  updateData (data, index) {
-    // this.copyList[index] = data
-    this.setSync()
+  updateData(data, tabIndex, index) {
+    this.copyList[tabIndex].list[index] = data;
+    this.setSync();
   }
 
-  connectedCallback () {
+  connectedCallback() {
     super.connectedCallback();
-    // this.getSync()
+    this.getSync();
   }
 
-  addOne() {
-    // this.copyList = [...this.copyList, '']
-    this.setSync()
-    console.log(this.copyList)
+  addOne(tabIndex) {
+    this.copyList[tabIndex].list = [...this.copyList[tabIndex].list, ""];
+    this.copyList = [...this.copyList];
+    this.setSync();
   }
 
-  removeOne(index) {
-    this.copyList.splice(index, 1)
-    this.copyList = [...this.copyList]
-    this.setSync()
+  removeOne(tabIndex, index) {
+    this.copyList[tabIndex].list.splice(index, 1);
+    this.copyList = [...this.copyList];
+    this.setSync();
+  }
+
+  private onTabEdit(type: 'add' | 'remove' | 'update', index, value) {
+    switch (type) {
+      case 'add': {
+        break;
+      }
+      case 'update': {
+        this.copyList[index].name = value;
+        break;
+      }
+      case 'remove': {
+
+      }
+    }
+    this.copyList = [...this.copyList];
+    this.setSync();
   }
 
   renderList() {
-      return this.copyList.map((item: any, index: Number) => {
-        console.log(item)
-        return html`
-          <lt-tabs-pane label="${item.name}">
-          ${item.list.map((val: String, index: Number) => html`
-            <div class="list-item">
-              <my-copy .updateFn=${(data) => this.updateData(data, index)} class="copy-item" .val=${val} ></my-copy>
-                <div class="remove" @click=${() => this.removeOne(index)} ><span class="btn">删除</span></div>
+    return this.copyList.map((item: any, tabIndex: Number) => {
+      return html`
+        <lt-tabs-pane .label="${item.name}">
+          ${item.list.map(
+            (val: String, index: Number) => html`
+              <div class="list-item">
+                <my-copy
+                  .updateFn=${(data) => this.updateData(data, tabIndex, index)}
+                  class="copy-item"
+                  .val=${val}
+                ></my-copy>
+                <div
+                  class="remove"
+                  @click=${() => this.removeOne(tabIndex, index)}
+                >
+                  <span class="btn">删除</span>
+                </div>
               </div>
-            `)}
-          </lt-tabs-pane>
-        `
-      })
-    }
+            `
+          )}
+          <div class="add">
+            <span class="btn" @click=${() => this.addOne(tabIndex)}>增加</span>
+          </div>
+        </lt-tabs-pane>
+      `;
+    });
+  }
 
   @state()
-  copyList: Array<any> = [{name: '标签1', list: ['asd']}, {name: '标签2', list: ['asd111']}, {name: '标签2', list: ['asd111']}, {name: '标签2', list: ['asd111']}]
+  copyList: Array<any> = [];
 
   render() {
     return html`
-        <div class="container">
-          <lt-tabs tabWidth="100px" >
-            ${this.renderList()}
-          </lt-tabs>
-        </div>
-    `
+      <div class="container">
+        <lt-tabs .onEdit=${this.onTabEdit} .editable=${true} tabWidth="100px"> ${this.renderList()} </lt-tabs>
+      </div>
+    `;
   }
 }

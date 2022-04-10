@@ -5,6 +5,10 @@ import { styleMap } from 'lit/directives/style-map.js';
 const tabsTagName = 'lt-tabs'
 const paneTagName = 'lt-tabs-pane'
 
+// declare function onEditProp (type: 'update', index: number, value: string): void;
+// declare function onEditProp (type: 'update', index: number, value: string): void
+
+type EditType = 'add' | 'remove' | 'update'
 
 @customElement(tabsTagName)
 export class Tabs extends LitElement {
@@ -26,6 +30,7 @@ export class Tabs extends LitElement {
     .tab-container {
       min-width: 100%;
       width: auto;
+      /* width: 100%; */
       height: 30px;
       overflow-x: auto;
       overflow-y: hidden;
@@ -40,7 +45,7 @@ export class Tabs extends LitElement {
       background-color: #ececec;
       /* flex: 1; */
       text-align: center;
-      height: 100%;
+      min-height: 100%;
       display: inline-block;
       user-select: none;
     }
@@ -52,6 +57,13 @@ export class Tabs extends LitElement {
 
     .content-container {
       flex: 1;
+    }
+
+    .edit-plus {
+      display: inline-block;
+      height: 100%;
+      user-select:none;
+      width: 30px;
     }
     
   `
@@ -77,6 +89,12 @@ export class Tabs extends LitElement {
 
   @property({ type: String })
   tabWidth: String = ''
+
+  @property()
+  editable: boolean = false
+
+  @property()
+  onEdit: (type: EditType, index: number, value: string) => void = () => {}
   
   private childrenLength: number
 
@@ -85,10 +103,16 @@ export class Tabs extends LitElement {
 
   private contentsChildren: Array<HTMLElement>
 
+  @state()
+  private listState: Array<{editable: boolean, label: string}> = []
+
+  private editTab (index: number) {
+    this.listState[index].editable = true
+    this.listState = [...this.listState]
+  }
 
   connectedCallback() {
     super.connectedCallback();
-    // init index
     this.currentTab = this.defaultIndex
     this.changeContnet()
   }
@@ -99,18 +123,30 @@ export class Tabs extends LitElement {
     this.changeContnet()
   }
 
+  onTabEdit (index: number, value: string): void {
+    value = value || this.listState[index].label
+    this.listState[index].editable = false
+    this.listState[index].label = value
+    this.listState = [...this.listState]
+    this.onEdit('update', index, value)
+  }
+
   private renderTabs () {
     const styles = { width: this.tabWidth }
-    return Array.from(this.children).map((ele: TabsPane, index: number) => html`
-      <span
-        @click=${(event) => this.changeCurrentTab(index, event)} 
-        class=${`${this.currentTab === index ? 'current-tab' : ''} tab-item`}
-        style=${styleMap(styles)}
-      >
-        ${ele.label}
-      </span>
-    `)
-  } 
+    return Array.from(this.children).map((ele: TabsPane, index: number) => 
+      this.listState[index]?.editable 
+        ? html`<my-inputs value=${ele.label} .onBlur=${(value: string) => this.onTabEdit(index, value)} />`
+        : html`
+          <span
+            @click=${(event) => this.changeCurrentTab(index, event)} 
+            class=${`${this.currentTab === index ? 'current-tab' : ''} tab-item`}
+            style=${styleMap(styles)}
+            @dblclick=${() => this.editable ? this.editTab(index) : () => {}}
+          >
+            ${this.listState[index]?.label}
+          </span>`
+      )
+  }
 
   private changeContnet () {
     Array.from(this.children).forEach((ele: HTMLElement , index) => {
@@ -119,13 +155,21 @@ export class Tabs extends LitElement {
     })
   }
 
+  handleSlotchange(e) {
+    this.listState = Array.from(this.children).map((element) => ({
+      editable: false,
+      label: (element as any).label
+    }))
+  }
+
   render() {
     return html`
       <div class="tab-container">
         ${this.renderTabs()}
+        ${this.editable ? html`<span class="edit-plus">123</span>` : null}
       </div>
       <div class="content-container">
-        <slot></slot>
+        <slot @slotchange=${this.handleSlotchange}></slot>
       </div>
   `
   }
@@ -147,7 +191,6 @@ export class TabsPane extends LitElement {
   public label = ''
 
   connectedCallback() {
-    console.log(this.label)
   }
   
   render() {
